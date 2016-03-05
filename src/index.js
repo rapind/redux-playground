@@ -3,58 +3,40 @@ require('./styles/index')
 import expect from 'expect.js'
 import deepFreeze from 'deep-freeze'
 
-const addCounter = (list) => {
-  return [...list, 0]
+const toggleTodo = (todo) => {
+  // return Object.assign(
+  //   {},
+  //   todo,
+  //   { completed: !todo.completed }
+  // )
+  return {
+    ...todo,
+    completed: !todo.completed
+  }
 }
 
-const removeCounter = (list, index) => {
-  return [
-    ...list.slice(0, index),
-    ...list.slice(index + 1)
-  ]
-}
 
-const incrementCounter = (list, index) => {
-  return [
-    ...list.slice(0, index),
-    (list[index] + 1),
-    ...list.slice(index + 1)
-  ]
-}
+const testToggleTodo = () => {
+  const todoBefore = {
+    id: 0,
+    text: 'Learn Redux',
+    completed: false
+  }
 
-const testAddCounter = () => {
-  const listBefore = []
-  deepFreeze(listBefore)
+  const todoAfter = {
+    id: 0,
+    text: 'Learn Redux',
+    completed: true
+  }
 
-  const listAfter = [0]
+  deepFreeze(todoBefore)
+
   expect(
-    addCounter(listBefore)
-  ).to.eql(listAfter)
+    toggleTodo(todoBefore)
+  ).to.eql(todoAfter)
 }
 
-const testRemoveCounter = () => {
-  const listBefore = [0, 3, 8]
-  deepFreeze(listBefore)
-
-  const listAfter = [0, 8]
-  expect(
-    removeCounter(listBefore, 1)
-  ).to.eql(listAfter)
-}
-
-const testIncrementCounter = () => {
-  const listBefore = [0, 3, 8]
-  deepFreeze(listBefore)
-
-  const listAfter = [0, 4, 8]
-  expect(
-    incrementCounter(listBefore, 1)
-  ).to.eql(listAfter)
-}
-
-testAddCounter()
-testRemoveCounter()
-testIncrementCounter()
+testToggleTodo()
 
 console.log('tests passed')
 
