@@ -3,41 +3,46 @@ require('./styles/index')
 import expect from 'expect.js'
 import deepFreeze from 'deep-freeze'
 
-const toggleTodo = (todo) => {
-  // return Object.assign(
-  //   {},
-  //   todo,
-  //   { completed: !todo.completed }
-  // )
-  return {
-    ...todo,
-    completed: !todo.completed
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return [
+        ...state,
+        {
+          id: action.id,
+          text: action.text,
+          completed: false
+        }
+      ]
+    default:
+      return state
   }
 }
 
-
-const testToggleTodo = () => {
-  const todoBefore = {
+const testAddTodo = () => {
+  const stateBefore = []
+  const action = {
+    type: 'ADD_TODO',
     id: 0,
-    text: 'Learn Redux',
-    completed: false
+    text: 'Learn Redux'
   }
+  deepFreeze(stateBefore)
+  deepFreeze(action)
 
-  const todoAfter = {
-    id: 0,
-    text: 'Learn Redux',
-    completed: true
-  }
-
-  deepFreeze(todoBefore)
+  const stateAfter = [
+    {
+      id: 0,
+      text: 'Learn Redux',
+      completed: false
+    }
+  ]
 
   expect(
-    toggleTodo(todoBefore)
-  ).to.eql(todoAfter)
+    todos(stateBefore, action)
+  ).to.eql(stateAfter)
 }
 
-testToggleTodo()
-
+testAddTodo()
 console.log('tests passed')
 
 
