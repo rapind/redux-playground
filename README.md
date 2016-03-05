@@ -1,6 +1,6 @@
 # Redux Playground
 
-Just a place for me to mess around with Redux.
+Just a place where I can mess around with Redux.
 
 ## Setup
 
