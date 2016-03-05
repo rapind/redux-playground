@@ -1,7 +1,7 @@
 require('./styles/index')
 
-import expect from 'expect.js'
-import deepFreeze from 'deep-freeze'
+// import expect from 'expect.js'
+// import deepFreeze from 'deep-freeze'
 
 const todo = (state, action) => {
   switch(action.type) {
@@ -17,7 +17,7 @@ const todo = (state, action) => {
       }
       return {
         ...state,
-        complete: !state.completed
+        completed: !state.completed
       }
     default:
       return state
@@ -40,72 +40,65 @@ const todos = (state = [], action) => {
   }
 }
 
-const testAddTodo = () => {
-  const stateBefore = []
-  const action = {
-    type: 'ADD_TODO',
-    id: 0,
-    text: 'Learn Redux'
+const visibilityFilter = (
+  state = 'SHOW_ALL',
+  action
+) => {
+  switch (action.type) {
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter
+    default:
+      return state
   }
-  deepFreeze(stateBefore)
-  deepFreeze(action)
-
-  const stateAfter = [
-    {
-      id: 0,
-      text: 'Learn Redux',
-      completed: false
-    }
-  ]
-
-  expect(
-    todos(stateBefore, action)
-  ).to.eql(stateAfter)
 }
 
-const testToggleTodo = () => {
-  const stateBefore = [
-    {
-      id: 0,
-      text: 'Learn Redux',
-      complete: false
-    },
-    {
-      id: 1,
-      text: 'Learn Elm',
-      complete: false
-    }
-  ]
-  const action = {
-    type: 'TOGGLE_TODO',
-    id: 1
+const todoApp = (state = {}, action) => {
+  return {
+    todos: todos(
+      state.todos,
+      action
+    ),
+    visibilityFilter: visibilityFilter(
+      state.visibilityFilter,
+      action
+    )
   }
-  deepFreeze(stateBefore)
-  deepFreeze(action)
-
-  const stateAfter = [
-    {
-      id: 0,
-      text: 'Learn Redux',
-      complete: false
-    },
-    {
-      id: 1,
-      text: 'Learn Elm',
-      complete: true
-    }
-  ]
-
-  expect(
-    todos(stateBefore, action)
-  ).to.eql(stateAfter)
 }
 
-testAddTodo()
-testToggleTodo()
+import { createStore } from 'redux'
+const store = createStore(todoApp)
 
-console.log('tests passed')
+console.log('State:', store.getState())
 
+console.log('Dispatching ADD_TODO')
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 0,
+  text: 'Learn Redux'
+})
+console.log('State:', store.getState())
+
+console.log('Dispatching ADD_TODO')
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 1,
+  text: 'Learn Elm'
+})
+console.log('State:', store.getState())
+
+console.log('Dispatching TOGGLE_TODO')
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 0
+})
+console.log('State:', store.getState())
+
+console.log('Dispatching SET_VISIBILITY_FILTER')
+store.dispatch({
+  type: 'SET_VISIBILITY_FILTER',
+  filter: 'SHOW_COMPLETED'
+})
+console.log('State:', store.getState())
 
 // import React from 'react'
 // import ReactDOM from 'react-dom'
