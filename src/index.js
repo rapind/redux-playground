@@ -2,16 +2,12 @@ require('./styles/index')
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
 
-import root from './stores/root'
-
-const store = createStore(root)
 const { Component } = React
 
 class VisibleTodoList extends Component {
   componentDidMount() {
-    this.unsubscribe = store.subscribe(() =>
+    this.unsubscribe = this.props.store.subscribe(() =>
       this.forceUpdate()
     )
   }
@@ -21,7 +17,7 @@ class VisibleTodoList extends Component {
   }
 
   render() {
-    const props = this.props
+    const { store } = this.props
     const state = store.getState()
 
     return (
@@ -86,6 +82,7 @@ const getVisibleTodos = (todos, filter) => {
 }
 
 const AddTodo = ({
+  store,
   onAddClick
 }) => {
   let input
@@ -131,7 +128,7 @@ const Link = ({
 
 class FilterLink extends Component {
   componentDidMount() {
-    this.unsubscribe = store.subscribe(() =>
+    this.unsubscribe = this.props.store.subscribe(() =>
       this.forceUpdate()
     )
   }
@@ -141,56 +138,59 @@ class FilterLink extends Component {
   }
 
   render() {
-    const props = this.props
+    const { store, filter, children } = this.props
     const state = store.getState()
 
     return (
       <Link
         active={
-          props.filter === state.visibilityFilter
+          filter === state.visibilityFilter
         }
         onClick={() =>
           store.dispatch({
             type: 'SET_VISIBILITY_FILTER',
-            filter: props.filter
+            filter: filter
           })
         }
       >
-        {props.children}
+        {children}
       </Link>
     )
   }
 }
 
-const Footer = () => (
+const Footer = ({ store }) => (
   <p>
     Show:
     {' '}
-    <FilterLink filter='SHOW_ALL'>
+    <FilterLink store={ store } filter='SHOW_ALL'>
       All
     </FilterLink>
     {' '}
-    <FilterLink filter='SHOW_ACTIVE'>
+    <FilterLink store={ store } filter='SHOW_ACTIVE'>
       Active
     </FilterLink>
     {' '}
-    <FilterLink filter='SHOW_COMPLETED'>
+    <FilterLink store={ store } filter='SHOW_COMPLETED'>
       Completed
     </FilterLink>
   </p>
 )
 
 let nextTodoId = 0
-const TodoApp = () => (
+const TodoApp = ({ store }) => (
   <div>
-    <AddTodo />
-    <VisibleTodoList />
-    <Footer />
+    <AddTodo store={ store } />
+    <VisibleTodoList store={ store } />
+    <Footer store={ store } />
   </div>
 )
 
 
+import root from './stores/root'
+import { createStore } from 'redux'
+
 ReactDOM.render(
-  <TodoApp />,
+  <TodoApp store={createStore(root)} />,
   document.getElementById('app')
 )
