@@ -7,7 +7,7 @@ const { Component } = React
 
 class VisibleTodoList extends Component {
   componentDidMount() {
-    this.unsubscribe = this.props.store.subscribe(() =>
+    this.unsubscribe = this.context.store.subscribe(() =>
       this.forceUpdate()
     )
   }
@@ -17,7 +17,7 @@ class VisibleTodoList extends Component {
   }
 
   render() {
-    const { store } = this.props
+    const { store } = this.context
     const state = store.getState()
 
     return (
@@ -34,6 +34,9 @@ class VisibleTodoList extends Component {
       />
     )
   }
+}
+VisibleTodoList.contextTypes = {
+  store: React.PropTypes.object
 }
 
 const Todo = ({
@@ -81,10 +84,7 @@ const getVisibleTodos = (todos, filter) => {
   }
 }
 
-const AddTodo = ({
-  store,
-  onAddClick
-}) => {
+const AddTodo = (props, { store }) => {
   let input
 
   return (
@@ -105,6 +105,11 @@ const AddTodo = ({
     </div>
   )
 }
+
+AddTodo.contextTypes = {
+  store: React.PropTypes.object
+}
+
 
 const Link = ({
   active,
@@ -128,7 +133,7 @@ const Link = ({
 
 class FilterLink extends Component {
   componentDidMount() {
-    this.unsubscribe = this.props.store.subscribe(() =>
+    this.unsubscribe = this.context.store.subscribe(() =>
       this.forceUpdate()
     )
   }
@@ -138,7 +143,8 @@ class FilterLink extends Component {
   }
 
   render() {
-    const { store, filter, children } = this.props
+    const { filter, children } = this.props
+    const { store } = this.context
     const state = store.getState()
 
     return (
@@ -157,6 +163,9 @@ class FilterLink extends Component {
       </Link>
     )
   }
+}
+FilterLink.contextTypes = {
+  store: React.PropTypes.object
 }
 
 const Footer = ({ store }) => (
@@ -186,11 +195,14 @@ const TodoApp = ({ store }) => (
   </div>
 )
 
+import { Provider } from'react-redux'
 
 import root from './stores/root'
 import { createStore } from 'redux'
 
 ReactDOM.render(
-  <TodoApp store={createStore(root)} />,
+  <Provider store={createStore(root)}>
+    <TodoApp />
+  </Provider>,
   document.getElementById('app')
 )
