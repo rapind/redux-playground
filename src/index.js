@@ -77,7 +77,8 @@ const getVisibleTodos = (todos, filter) => {
   }
 }
 
-const AddTodo = (props, { store }) => {
+let nextTodoId = 0
+let AddTodo = ({ dispatch }) => {
   let input
 
   return (
@@ -86,7 +87,7 @@ const AddTodo = (props, { store }) => {
         input = node
       }} />
       <button onClick={() => {
-        store.dispatch({
+        dispatch({
           type: 'ADD_TODO',
           id: nextTodoId++,
           text: input.value
@@ -98,10 +99,7 @@ const AddTodo = (props, { store }) => {
     </div>
   )
 }
-
-AddTodo.contextTypes = {
-  store: React.PropTypes.object
-}
+AddTodo = connect()(AddTodo)
 
 
 const Link = ({
@@ -179,12 +177,11 @@ const Footer = ({ store }) => (
   </p>
 )
 
-let nextTodoId = 0
-const TodoApp = ({ store }) => (
+const TodoApp = () => (
   <div>
-    <AddTodo store={ store } />
-    <VisibleTodoList store={ store } />
-    <Footer store={ store } />
+    <AddTodo />
+    <VisibleTodoList />
+    <Footer />
   </div>
 )
 
